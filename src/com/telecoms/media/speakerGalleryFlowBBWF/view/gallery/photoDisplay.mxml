@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" backgroundColor="#FFFFFF" 
+		height="100%" 
+		width="100%" 
+		paddingTop="5"
+		paddingBottom="5"
+		horizontalScrollPolicy="off" 
+		verticalScrollPolicy="off"
+		xmlns:gallery="com.telecoms.media.speakerGalleryFlowBBWF.view.gallery.*" 
+		xmlns:controls="com.benclinkinbeard.controls.*" 
+		y="0" 
+		rollOver="{next.visible=true}{previous.visible=true}"
+		rollOut="{next.visible=false}{previous.visible=false}"
+		autoLayout="false"
+		>
+<mx:Script>
+	<![CDATA[
+		import mx.events.ListEvent;
+		import mx.effects.Tween;
+		import com.telecoms.media.speakerGalleryFlowBBWF.control.events.gallery.LoadImagesEvent;
+		import mx.controls.Image;
+ 		import com.telecoms.media.speakerGalleryFlowBBWF.model.PhotosModelLocator;
+        import mx.events.SliderEvent;
+        import com.telecoms.media.speakerGalleryFlowBBWF.view.gallery.SmoothScrollingHorizontalList;
+        import mx.effects.easing.*;
+		import flash.external.*;
+		
+		[Bindable]
+		public var model:PhotosModelLocator = PhotosModelLocator.getInstance();
+		private var tween:Tween;
+		private var itemIndex:int = 0;
+		private var totalImages:int = -3;
+		
+		// Load Image data
+		public function loadXML():void
+		{
+			var event:LoadImagesEvent=null;
+			event=new LoadImagesEvent();
+			event.dispatch();
+		}
+
+		// Button Controls for navigating images
+        private function scrollHorizontalList(dir:String):void
+        {
+            var pos:Number = photoTileList.horizontalScrollPosition;
+            var end:Number = photoTileList.maxVerticalScrollPosition;
+           
+            if(dir == "right"){
+            	if(itemIndex < 1){
+            		itemIndex = 0;
+            	}
+            	itemIndex = itemIndex + 1;
+                end = list.columnWidth * itemIndex;
+                if(tween != null) tween.endTween();
+                tween = new Tween(this, pos, end, 1000, 10, tweenUpdateHandler, tweenEndHandler);
+                tween.easingFunction = Circular.easeOut;
+            } else if (dir == "left") {
+            	if(itemIndex >= model.photoObjects.length - 1){
+            	itemIndex = model.photoObjects.length -2;
+            	}
+            	itemIndex = itemIndex - 1;
+                end = list.columnWidth * itemIndex;
+                if(tween != null) tween.endTween();
+                tween = new Tween(this, pos, end, 1000, 10, tweenUpdateHandler, tweenEndHandler);
+                tween.easingFunction = Circular.easeOut;
+            }
+        }
+       
+        private function tweenUpdateHandler(value:String):void
+        {
+            photoTileList.horizontalScrollPosition = Math.round(Number(value)*100)/100;
+        }
+        private function tweenEndHandler(value:String):void
+        {
+            //trace('tween end value: ' + value);
+        }
+        private function showFullImage(event:ListEvent):void
+        {
+        	var i:int = new int;
+        	var imageUrlString:String = new String;
+        	i = event.columnIndex;
+        	trace(model.photoAdresses.images[i].urlFull);
+        	imageUrlString = model.photoAdresses.images[i].urlFull;
+        	var imageURL:URLRequest = new URLRequest(imageUrlString);
+    		navigateToURL(imageURL);
+        }
+	]]>
+</mx:Script>
+
+	<mx:Component id="ImageRenderer">
+		<mx:VBox verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <mx:Image source="{data}" width="145" horizontalAlign="center"/>
+			<!--<mx:Label text=""/>-->
+		</mx:VBox>
+    </mx:Component>
+	
+	<mx:Canvas id="photoTileList" width="183" height="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" x="36" autoLayout="false">
+		<gallery:SmoothScrollingHorizontalList id="list" backgroundColor="#FFFFFF" width="100%"
+			 dataProvider="{model.photoObjects}" itemRenderer="{ImageRenderer}"
+			 columnCount="4" columnWidth="125" rowHeight="105" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			 selectable="false" borderColor="#FFFFFF" itemClick="showFullImage(event);"
+			 >
+		</gallery:SmoothScrollingHorizontalList>
+	</mx:Canvas>
+		
+	<mx:Canvas height="100%" width="100%" horizontalScrollPolicy="off">
+		<mx:Button id="previous" 
+			upSkin="@Embed('../images/arrow.png')" 
+			downSkin="@Embed('../images/arrow.png')"
+			overSkin="@Embed('../images/arrow.png')" 
+			click="scrollHorizontalList('left')"
+			label=""
+			x="10" y="35"/>
+		<mx:Button id="next"
+			upSkin="@Embed('../images/arrow.png')" 
+			downSkin="@Embed('../images/arrow.png')"
+			overSkin="@Embed('../images/arrow.png')" 
+			rotation="180"
+			click="scrollHorizontalList('right')"
+			label=""
+			x="250" y="68"/>
+	</mx:Canvas>
+</mx:Canvas>
