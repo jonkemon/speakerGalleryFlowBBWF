@@ -28,6 +28,8 @@ package com.telecoms.media.speakerGalleryFlowBBWF.control.command
 		{
 			model.photoAdresses = event.token.result as XML;
 			
+			trace('URLs are '+model.photoAdresses);
+			
 			var totalImages:int = model.photoAdresses.speaker.length();
 			for (var i:int=0;i<totalImages;i++){
 			var photo:String = new String;

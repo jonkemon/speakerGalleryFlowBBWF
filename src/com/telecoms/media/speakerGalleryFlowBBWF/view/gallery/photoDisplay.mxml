@@ -9,8 +9,6 @@
 		xmlns:gallery="com.telecoms.media.speakerGalleryFlowBBWF.view.gallery.*" 
 		xmlns:controls="com.benclinkinbeard.controls.*" 
 		y="0" 
-		rollOver="{next.visible=true}{previous.visible=true}"
-		rollOut="{next.visible=false}{previous.visible=false}"
 		autoLayout="false"
 		>
 <mx:Script>
@@ -88,26 +86,28 @@
 </mx:Script>
 
 	<mx:Component id="ImageRenderer">
-		<mx:VBox verticalScrollPolicy="off" horizontalScrollPolicy="off">
-            <mx:Image source="{data}" width="145" horizontalAlign="center"/>
-			<!--<mx:Label text=""/>-->
+		<mx:VBox verticalScrollPolicy="off" horizontalScrollPolicy="off" verticalGap="0" paddingLeft="0">
+            <mx:Image source="{data.imageurl}" width="185" horizontalAlign="center"/>
+			<mx:Label text="{data.name}" textAlign="center" width="185" fontWeight="bold"/>
+			<mx:Label text="{data.title}" textAlign="center" width="185"/>
+			<mx:Label text="{data.company}" textAlign="center" width="185" color="#5090fd"/>
 		</mx:VBox>
     </mx:Component>
 	
-	<mx:Canvas id="photoTileList" width="183" height="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" x="36" autoLayout="false">
+	<mx:Canvas id="photoTileList" width="183" height="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" x="40" autoLayout="false">
 		<gallery:SmoothScrollingHorizontalList id="list" backgroundColor="#FFFFFF" width="100%"
-			 dataProvider="{model.photoObjects}" itemRenderer="{ImageRenderer}"
-			 columnCount="4" columnWidth="125" rowHeight="105" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			 dataProvider="{model.photoAdresses.speaker}" itemRenderer="{ImageRenderer}"
+			 columnCount="4" columnWidth="175" rowHeight="155" verticalScrollPolicy="off" horizontalScrollPolicy="off"
 			 selectable="false" borderColor="#FFFFFF" itemClick="showFullImage(event);"
 			 >
 		</gallery:SmoothScrollingHorizontalList>
 	</mx:Canvas>
 		
 	<mx:Canvas height="100%" width="100%" horizontalScrollPolicy="off">
-		<mx:Button id="previous" 
-			upSkin="@Embed('../images/arrow.png')" 
+		<mx:Button id="previous"
+			upSkin="@Embed('../images/arrow.png')"
 			downSkin="@Embed('../images/arrow.png')"
-			overSkin="@Embed('../images/arrow.png')" 
+			overSkin="@Embed('../images/arrow.png')"
 			click="scrollHorizontalList('left')"
 			label=""
 			x="10" y="35"/>
